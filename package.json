@@ -1,0 +1,25 @@
+{
+	"name": "meetme",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"cf-typegen": "wrangler types"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@types/node": "^25.0.3",
+		"typescript": "^5.5.2",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.54.0"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "^0.71.2",
+		"agents": "^0.3.3",
+		"mimetext": "^3.0.27",
+		"postal-mime": "^2.7.1"
+	}
+}

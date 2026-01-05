@@ -1,0 +1,91 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "meetme",
+	"main": "src/index.ts",
+	"dev": {
+		"port": 8787
+	},
+	"compatibility_date": "2025-12-30",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"enable_email_sending_queuing"
+	],
+	"observability": {
+		"enabled": true
+	},
+	// Static assets for the dashboard
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS",
+		"html_handling": "none",
+		"not_found_handling": "single-page-application"
+	},
+	// Environment variables (non-sensitive)
+	"vars": {
+		"ENVIRONMENT": "development",
+		"BOT_EMAIL_PREFIX": "meetme",
+		"DEFAULT_MEETING_DURATION_MINUTES": "30",
+		"WORKING_HOURS_START": "9",
+		"WORKING_HOURS_END": "17",
+		"TIMEZONE": "Europe/Berlin"
+	},
+	// D1 Database - stores conversation metadata
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "meetme-db",
+			"database_id": "2e83d6f4-a5d2-490e-b4cd-5459e842a820"
+		}
+	],
+	// KV Namespace - stores OAuth tokens (encrypted)
+	"kv_namespaces": [
+		{
+			"binding": "TOKENS",
+			"id": "17622dca6e0b4939ab2cac4296fa95a0"
+		}
+	],
+	// Durable Objects - stateful conversation handlers
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "CONVERSATION_AGENT",
+				"class_name": "ConversationAgent"
+			},
+			{
+				"name": "SCHEDULING_AGENT",
+				"class_name": "SchedulingAgent"
+			},
+			{
+				"name": "DASHBOARD_AGENT",
+				"class_name": "DashboardAgent"
+			}
+		]
+	},
+	// Migrations for Durable Objects SQLite storage
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": [
+				"ConversationAgent"
+			]
+		},
+		{
+			"tag": "v2",
+			"new_sqlite_classes": [
+				"SchedulingAgent"
+			]
+		},
+		{
+			"tag": "v3",
+			"new_sqlite_classes": [
+				"DashboardAgent"
+			]
+		}
+	],
+	// Email Sending binding (new Email Service API)
+	"send_email": [
+		{
+			"name": "EMAIL"
+		}
+	]
+}

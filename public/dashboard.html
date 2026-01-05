@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetMe - Dashboard</title>
+    <meta name="description" content="AI scheduling assistant. CC meetme@ in any email.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #141414;
+            --border: #262626;
+            --border-hover: #404040;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-subtle: rgba(249, 115, 22, 0.1);
+            --green: #22c55e;
+            --green-subtle: rgba(34, 197, 94, 0.1);
+            --yellow: #eab308;
+            --yellow-subtle: rgba(234, 179, 8, 0.1);
+            --red: #ef4444;
+            --red-subtle: rgba(239, 68, 68, 0.1);
+            --blue: #3b82f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            color: var(--accent);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            background: var(--accent-subtle);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-item .count {
+            margin-left: auto;
+            font-size: 12px;
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: var(--text-tertiary);
+        }
+
+        .nav-section {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-section-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            padding: 0 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .user-card:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-subtle);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-logout {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .topbar {
+            height: 64px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-primary);
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 32px;
+            max-width: 1200px;
+        }
+
+        .content-main {
+            min-width: 0;
+        }
+
+        .content-sidebar {
+            min-width: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Intro */
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .sub {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        /* Quick Start Box */
+        .quick-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .quick-box-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-box-email {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quick-box-email code {
+            color: var(--accent);
+            font-size: 16px;
+            font-family: 'Inter', monospace;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        .copy-btn.copied {
+            color: var(--green);
+            border-color: var(--green);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* How to Use Card */
+        .how-to-use {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .how-to-use-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .how-to-use-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-subtle);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .how-to-use-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        .how-to-use-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .how-to-use-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .how-to-use-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .step-text code {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Text Input */
+        input[type="text"] {
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+            width: 200px;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+
+        input[type="text"]:hover {
+            border-color: var(--border-hover);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Section */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-secondary);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-secondary);
+        }
+
+        .filter-btn.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Table */
+        .table-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .conv-cell {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .conv-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .conv-info {
+            min-width: 0;
+        }
+
+        .conv-subject {
+            color: var(--text-primary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+
+        .conv-participant {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        /* Status */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-proposed { 
+            color: var(--yellow); 
+            background: var(--yellow-subtle);
+        }
+        .status-proposed::before { background: var(--yellow); }
+
+        .status-scheduled { 
+            color: var(--green); 
+            background: var(--green-subtle);
+        }
+        .status-scheduled::before { background: var(--green); }
+
+        .status-awaiting_confirmation { 
+            color: var(--accent); 
+            background: var(--accent-subtle);
+        }
+        .status-awaiting_confirmation::before { background: var(--accent); }
+
+        .status-new, .status-parsing { 
+            color: var(--text-secondary); 
+            background: var(--bg-tertiary);
+        }
+        .status-new::before, .status-parsing::before { background: var(--text-secondary); }
+
+        .status-parsing::before {
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-cancelled, .status-declined, .status-error { 
+            color: var(--red); 
+            background: var(--red-subtle);
+        }
+        .status-cancelled::before, .status-declined::before, .status-error::before { background: var(--red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .time {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-title {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+        }
+
+        /* Settings */
+        .settings-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .settings-desc {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .content-sidebar .settings-row {
+            flex-wrap: wrap;
+        }
+
+        .content-sidebar select,
+        .content-sidebar input[type="text"] {
+            width: 140px;
+        }
+
+        .content-sidebar .settings-control {
+            width: 140px;
+            gap: 6px;
+            justify-content: flex-start;
+        }
+
+        .content-sidebar .settings-control input[type="number"] {
+            width: 52px;
+            padding: 10px 4px;
+            flex-shrink: 0;
+        }
+        
+        .content-sidebar .settings-control span {
+            font-size: 13px;
+        }
+
+        .content-sidebar .settings-footer {
+            padding: 12px 16px;
+        }
+
+        .content-sidebar .settings-footer .btn {
+            width: 100%;
+        }
+
+        select, input[type="number"] {
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        select:hover, input[type="number"]:hover {
+            border-color: var(--border-hover);
+        }
+
+        input[type="number"] {
+            width: 64px;
+            text-align: center;
+        }
+
+        .settings-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: 0.2s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--text-tertiary);
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toggle input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+            background: white;
+        }
+
+        .settings-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            background: var(--bg-secondary);
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Login */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: var(--bg-primary);
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 48px;
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .login-logo svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent);
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .login-sub {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f1f1f;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 64px;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Initial loading state - hide everything until auth is checked */
+        .auth-loading {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .auth-ready {
+            opacity: 1;
+            transition: opacity 0.15s ease;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-success {
+            border-color: var(--green);
+        }
+
+        .toast-success::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.25s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .modal-close svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .modal-body {
+            padding: 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Meeting header section */
+        .meeting-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .meeting-subject {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .meeting-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meeting-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .meeting-meta-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-tertiary);
+        }
+
+        /* Confirmed time highlight */
+        .confirmed-time-box {
+            margin: 0 24px 24px;
+            padding: 16px 20px;
+            background: var(--green-subtle);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .confirmed-time-box.pending {
+            background: var(--yellow-subtle);
+            border-color: rgba(234, 179, 8, 0.3);
+        }
+
+        .confirmed-time-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--green);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .confirmed-time-box.pending .confirmed-time-icon {
+            background: var(--yellow);
+        }
+
+        .confirmed-time-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .confirmed-time-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .confirmed-time-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--green);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .confirmed-time-box.pending .confirmed-time-label {
+            color: var(--yellow);
+        }
+
+        .confirmed-time-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .confirmed-time-action {
+            flex-shrink: 0;
+        }
+
+        .confirmed-time-action a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--accent);
+            text-decoration: none;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .confirmed-time-action a:hover {
+            background: var(--bg-secondary);
+        }
+
+        .confirmed-time-action svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Detail sections */
+        .detail-section {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* Participants */
+        .participants-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .participant-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .participant-avatar {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-subtle);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Time slots */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .slot {
+            padding: 12px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .slot.selected {
+            border-color: var(--green);
+            background: var(--green-subtle);
+        }
+
+        .slot-time {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .slot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--green);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .slot-badge svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .no-slots {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+
+        /* Modal footer */
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .modal-footer-left {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-footer-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-ghost {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-danger-ghost {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--red);
+        }
+
+        .btn-danger-ghost:hover {
+            border-color: var(--red);
+            background: var(--red-subtle);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            border: none;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .stats { grid-template-columns: 1fr; }
+            .content { padding: 24px 16px; }
+            .topbar { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast notification -->
+    <div class="toast toast-success" id="toast">Saved</div>
+
+    <!-- Conversation Detail Modal -->
+    <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">Meeting Details</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Populated by JS -->
+            </div>
+            <div class="modal-footer">
+                <div class="modal-footer-left">
+                    <button class="btn btn-danger-ghost btn-icon" id="deleteBtn" onclick="deleteConversation()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+                <div class="modal-footer-right">
+                    <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login -->
+    <div class="login-page hidden auth-loading" id="loginPage">
+        <div class="login-box">
+            <div class="login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                MeetMe
+            </div>
+            <h1 class="login-title">AI scheduling assistant</h1>
+            <p class="login-sub">CC meetme@ in any email thread. Your calendar, checked. Times proposed. Meeting booked.</p>
+            <button class="google-btn" onclick="login()">
+                <svg viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="login-footer">Connect your Google Calendar to get started</p>
+        </div>
+    </div>
+
+    <!-- App -->
+    <div class="app hidden auth-loading" id="app">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    MeetMe
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    Overview
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-label">Settings</div>
+                    <div class="nav-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        Preferences
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-card" onclick="logout()">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-info">
+                        <div class="user-email" id="userEmail">user@email.com</div>
+                    </div>
+                    <span class="user-logout">Logout</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="page-title">Overview</div>
+            </div>
+
+            <div class="content">
+                <div class="content-grid">
+                    <div class="content-main">
+                        <h1>AI scheduling assistant</h1>
+                        <p class="sub">CC your MeetMe address in any email. AI checks your calendar and proposes times.</p>
+
+                        <div class="quick-box">
+                            <div class="quick-box-label">Your MeetMe Address</div>
+                            <div class="quick-box-email">
+                                <code id="botEmail">meetme@inboxbuddy.dev</code>
+                                <button class="copy-btn" id="copyBtn" onclick="copyEmail()">
+                                    <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                    <svg class="check-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    <span id="copyText">Copy</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- How to Use Card -->
+                        <div class="how-to-use">
+                            <div class="how-to-use-header">
+                                <div class="how-to-use-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                                <div class="how-to-use-title">How to use MeetMe</div>
+                            </div>
+                            <div class="how-to-use-steps">
+                                <div class="how-to-use-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-text">When emailing someone about scheduling a meeting, add <code>meetme@inboxbuddy.dev</code> to the CC field</div>
+                                </div>
+                                <div class="how-to-use-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-text">MeetMe will check your calendar and reply with available time slots</div>
+                                </div>
+                                <div class="how-to-use-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-text">When someone confirms a time, MeetMe automatically creates the calendar event</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-label">Active</div>
+                                <div class="stat-value" id="statActive">0</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Scheduled</div>
+                                <div class="stat-value" id="statScheduled">0</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Pending</div>
+                                <div class="stat-value" id="statPending">0</div>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <div class="section-title">Conversations</div>
+                            <div class="filters">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="proposed">Proposed</button>
+                                <button class="filter-btn" data-filter="scheduled">Scheduled</button>
+                                <button class="filter-btn" data-filter="awaiting_confirmation">Pending</button>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap" id="tableWrap">
+                            <div class="loading"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="content-sidebar">
+                        <div class="section-header">
+                            <div class="section-title">Preferences</div>
+                        </div>
+                        <div class="settings-box">
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Timezone</div>
+                                </div>
+                                <select id="timezone">
+                                    <option value="America/Los_Angeles">Pacific (PT)</option>
+                                    <option value="America/Denver">Mountain (MT)</option>
+                                    <option value="America/Chicago">Central (CT)</option>
+                                    <option value="America/New_York">Eastern (ET)</option>
+                                    <option value="Europe/London">London (GMT)</option>
+                                    <option value="Europe/Berlin">Berlin (CET)</option>
+                                    <option value="Europe/Paris">Paris (CET)</option>
+                                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                                </select>
+                            </div>
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Working Hours</div>
+                                </div>
+                                <div class="settings-control">
+                                    <input type="number" id="workStart" min="0" max="23" value="9">
+                                    <span>to</span>
+                                    <input type="number" id="workEnd" min="0" max="23" value="17">
+                                </div>
+                            </div>
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Buffer</div>
+                                </div>
+                                <select id="buffer">
+                                    <option value="0">None</option>
+                                    <option value="5">5 min</option>
+                                    <option value="10">10 min</option>
+                                    <option value="15" selected>15 min</option>
+                                    <option value="30">30 min</option>
+                                </select>
+                            </div>
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Default Duration</div>
+                                </div>
+                                <select id="defaultDuration">
+                                    <option value="15">15 min</option>
+                                    <option value="30" selected>30 min</option>
+                                    <option value="45">45 min</option>
+                                    <option value="60">60 min</option>
+                                </select>
+                            </div>
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Meeting Title Prefix</div>
+                                </div>
+                                <input type="text" id="meetingPrefix" placeholder="e.g. [MeetMe]">
+                            </div>
+                            <div class="settings-row">
+                                <div>
+                                    <div class="settings-label">Weekends</div>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" id="includeWeekends">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-footer">
+                                <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let conversations = [];
+        let currentFilter = 'all';
+        const API = window.location.origin;
+        let ws = null; // WebSocket connection
+        let wsReconnectTimer = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            setupFilters();
+        });
+
+        async function checkAuth() {
+            try {
+                const res = await fetch(`${API}/api/me`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        currentUser = data.data;
+                        showApp();
+                        return;
+                    }
+                }
+            } catch (e) {}
+            showLogin();
+        }
+
+        function showLogin() {
+            const loginPage = document.getElementById('loginPage');
+            const app = document.getElementById('app');
+            
+            loginPage.classList.remove('hidden');
+            app.classList.add('hidden');
+            
+            // Trigger transition after removing hidden
+            requestAnimationFrame(() => {
+                loginPage.classList.remove('auth-loading');
+                loginPage.classList.add('auth-ready');
+            });
+        }
+
+        function showApp() {
+            const loginPage = document.getElementById('loginPage');
+            const app = document.getElementById('app');
+            
+            loginPage.classList.add('hidden');
+            app.classList.remove('hidden');
+            
+            // Trigger transition after removing hidden
+            requestAnimationFrame(() => {
+                app.classList.remove('auth-loading');
+                app.classList.add('auth-ready');
+            });
+
+            const email = currentUser.email;
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userAvatar').textContent = email.charAt(0).toUpperCase();
+            document.getElementById('botEmail').textContent = 'meetme@inboxbuddy.dev';
+
+            // Connect WebSocket for real-time updates
+            connectWebSocket();
+            
+            loadConversations();
+            loadSettings();
+        }
+
+        // WebSocket connection for real-time updates
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) return;
+            
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/dashboard`;
+            
+            console.log('[WS] Connecting to', wsUrl);
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('[WS] Connected');
+                // Subscribe with user email
+                ws.send(JSON.stringify({ type: 'subscribe', userEmail: currentUser.email }));
+                // Clear any reconnect timer
+                if (wsReconnectTimer) {
+                    clearTimeout(wsReconnectTimer);
+                    wsReconnectTimer = null;
+                }
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    console.log('[WS] Message:', msg.type);
+                    handleWebSocketMessage(msg);
+                } catch (e) {
+                    console.error('[WS] Parse error:', e);
+                }
+            };
+            
+            ws.onclose = () => {
+                console.log('[WS] Disconnected');
+                // Reconnect after 3 seconds
+                wsReconnectTimer = setTimeout(connectWebSocket, 3000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('[WS] Error:', error);
+            };
+        }
+        
+        function handleWebSocketMessage(msg) {
+            switch (msg.type) {
+                case 'state':
+                    // Full state update
+                    conversations = msg.data.conversations || [];
+                    renderConversations();
+                    updateStatsFromData(msg.data.stats);
+                    break;
+                    
+                case 'conversationUpdate':
+                    // Single conversation updated
+                    const idx = conversations.findIndex(c => c.id === msg.conversation.id);
+                    if (idx >= 0) {
+                        conversations[idx] = msg.conversation;
+                    } else {
+                        conversations.unshift(msg.conversation);
+                    }
+                    conversations.sort((a, b) => b.last_activity - a.last_activity);
+                    renderConversations();
+                    updateStats();
+                    showToast('New update received');
+                    break;
+                    
+                case 'conversationDeleted':
+                    conversations = conversations.filter(c => c.id !== msg.conversationId);
+                    renderConversations();
+                    updateStats();
+                    break;
+                    
+                case 'error':
+                    console.error('[WS] Server error:', msg.message);
+                    break;
+            }
+        }
+        
+        function updateStatsFromData(stats) {
+            if (!stats) return;
+            document.getElementById('statActive').textContent = stats.active || 0;
+            document.getElementById('statScheduled').textContent = stats.scheduled || 0;
+            document.getElementById('statPending').textContent = stats.pending || 0;
+        }
+
+        function login() {
+            window.location.href = `${API}/auth/google?return_to=${encodeURIComponent(window.location.origin + '/dashboard')}`;
+        }
+
+        function logout() {
+            // Use server-side logout to clear HttpOnly cookie and redirect
+            window.location.href = '/auth/logout';
+        }
+
+        function copyEmail() {
+            const email = document.getElementById('botEmail').textContent;
+            navigator.clipboard.writeText(email);
+            
+            // Show feedback
+            const btn = document.getElementById('copyBtn');
+            const copyIcon = btn.querySelector('.copy-icon');
+            const checkIcon = btn.querySelector('.check-icon');
+            const copyText = document.getElementById('copyText');
+            
+            btn.classList.add('copied');
+            copyIcon.classList.add('hidden');
+            checkIcon.classList.remove('hidden');
+            copyText.textContent = 'Copied!';
+            
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                copyIcon.classList.remove('hidden');
+                checkIcon.classList.add('hidden');
+                copyText.textContent = 'Copy';
+            }, 2000);
+        }
+
+        async function loadConversations() {
+            try {
+                const params = new URLSearchParams({ pageSize: '50' });
+                if (currentFilter !== 'all') params.set('status', currentFilter);
+
+                const res = await fetch(`${API}/api/conversations?${params}`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        conversations = data.data.conversations;
+                        renderConversations();
+                        updateStats();
+                    }
+                }
+            } catch (e) {}
+        }
+
+        function getOtherParticipants(conv) {
+            const ownerEmail = currentUser?.email?.toLowerCase();
+            return (conv.participants || []).filter(p => {
+                const email = p.toLowerCase();
+                return email !== ownerEmail && !email.startsWith('meetme@');
+            });
+        }
+
+        function formatParticipants(conv) {
+            const others = getOtherParticipants(conv);
+            if (others.length === 0) return 'Unknown';
+            if (others.length === 1) return others[0];
+            if (others.length === 2) return `${others[0]} & ${others[1]}`;
+            return `${others[0]} +${others.length - 1} others`;
+        }
+
+        function renderConversations() {
+            const wrap = document.getElementById('tableWrap');
+
+            if (!conversations.length) {
+                wrap.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-title">No conversations yet</div>
+                        <div class="empty-desc">CC meetme@ in any email to start</div>
+                    </div>
+                `;
+                return;
+            }
+
+            wrap.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conversation</th>
+                            <th>Status</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${conversations.map(c => {
+                            const others = getOtherParticipants(c);
+                            const displayName = formatParticipants(c);
+                            const initial = others.length > 0 ? others[0].charAt(0).toUpperCase() : '?';
+                            return `
+                            <tr onclick="viewConv('${c.id}')">
+                                <td>
+                                    <div class="conv-cell">
+                                        <div class="conv-avatar">${initial}</div>
+                                        <div class="conv-info">
+                                            <div class="conv-subject">${esc(c.subject || '(no subject)')}</div>
+                                            <div class="conv-participant">${esc(displayName)}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="status status-${c.status}">${formatStatus(c.status)}</span></td>
+                                <td><span class="time">${timeAgo(c.last_activity * 1000)}</span></td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function updateStats() {
+            const active = conversations.filter(c => ['proposed', 'awaiting_confirmation', 'new', 'parsing'].includes(c.status)).length;
+            const scheduled = conversations.filter(c => c.status === 'scheduled').length;
+            const pending = conversations.filter(c => c.status === 'awaiting_confirmation').length;
+
+            document.getElementById('statActive').textContent = active;
+            document.getElementById('statScheduled').textContent = scheduled;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('navCount').textContent = active;
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await fetch(`${API}/api/settings`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById('timezone').value = data.data.timezone || 'America/Los_Angeles';
+                        document.getElementById('workStart').value = data.data.working_hours_start || 9;
+                        document.getElementById('workEnd').value = data.data.working_hours_end || 17;
+                        document.getElementById('buffer').value = data.data.buffer_minutes || 15;
+                        document.getElementById('defaultDuration').value = data.data.default_meeting_duration || 30;
+                        document.getElementById('meetingPrefix').value = data.data.meeting_title_prefix || '';
+                        document.getElementById('includeWeekends').checked = data.data.include_weekends || false;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function saveSettings() {
+            const settings = {
+                timezone: document.getElementById('timezone').value,
+                working_hours_start: parseInt(document.getElementById('workStart').value),
+                working_hours_end: parseInt(document.getElementById('workEnd').value),
+                buffer_minutes: parseInt(document.getElementById('buffer').value),
+                default_meeting_duration: parseInt(document.getElementById('defaultDuration').value),
+                meeting_title_prefix: document.getElementById('meetingPrefix').value.trim(),
+                include_weekends: document.getElementById('includeWeekends').checked
+            };
+
+            try {
+                const res = await fetch(`${API}/api/settings`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                if (res.ok) {
+                    showToast('Saved');
+                } else {
+                    console.error('Failed to save settings:', res.status);
+                    showToast('Error saving');
+                }
+            } catch (e) {
+                console.error('Error saving settings:', e);
+                showToast('Error saving');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        let selectedConversationId = null;
+
+        async function viewConv(id) {
+            selectedConversationId = id;
+            
+            try {
+                const res = await fetch(`${API}/api/conversations/${id}`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        showModal(data.data);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load conversation:', e);
+            }
+            
+            const c = conversations.find(x => x.id === id);
+            if (c) showModal(c);
+        }
+
+        function showModal(conv) {
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+            const others = getOtherParticipants(conv);
+            
+            // Build confirmed time box (for scheduled meetings) or pending box
+            let timeBoxHtml = '';
+            if (conv.status === 'scheduled' && conv.selected_slot) {
+                const calendarLink = conv.calendar_event_id 
+                    ? `<div class="confirmed-time-action">
+                        <a href="https://calendar.google.com/calendar/event?eid=${conv.calendar_event_id}" target="_blank">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Calendar
+                        </a>
+                    </div>` 
+                    : '';
+                timeBoxHtml = `
+                    <div class="confirmed-time-box">
+                        <div class="confirmed-time-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <div class="confirmed-time-content">
+                            <div class="confirmed-time-label">Confirmed</div>
+                            <div class="confirmed-time-value">${esc(conv.selected_slot.label)}</div>
+                        </div>
+                        ${calendarLink}
+                    </div>
+                `;
+            } else if (conv.status === 'proposed' || conv.status === 'awaiting_confirmation') {
+                timeBoxHtml = `
+                    <div class="confirmed-time-box pending">
+                        <div class="confirmed-time-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <div class="confirmed-time-content">
+                            <div class="confirmed-time-label">Awaiting Response</div>
+                            <div class="confirmed-time-value">${conv.proposed_slots?.length || 0} times proposed</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Build slots grid
+            let slotsHtml = '<div class="no-slots">No times proposed yet</div>';
+            if (conv.proposed_slots && conv.proposed_slots.length > 0) {
+                slotsHtml = `<div class="slots-grid">
+                    ${conv.proposed_slots.map(slot => {
+                        const isSelected = conv.selected_slot && conv.selected_slot.start === slot.start;
+                        return `<div class="slot ${isSelected ? 'selected' : ''}">
+                            <div class="slot-time">${esc(slot.label)}</div>
+                            ${isSelected ? `<div class="slot-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                Selected
+                            </div>` : ''}
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }
+
+            // Build participants
+            let participantsHtml = '<div class="no-slots">No participants</div>';
+            if (others.length > 0) {
+                participantsHtml = `<div class="participants-grid">
+                    ${others.map(p => {
+                        const initial = p.charAt(0).toUpperCase();
+                        return `<div class="participant-chip">
+                            <div class="participant-avatar">${initial}</div>
+                            ${esc(p)}
+                        </div>`;
+                    }).join('')}
+                </div>`;
+            }
+
+            body.innerHTML = `
+                <div class="meeting-header">
+                    <div class="meeting-subject">${esc(conv.meeting_title || conv.subject || '(no subject)')}</div>
+                    <div class="meeting-meta">
+                        <div class="meeting-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            ${conv.meeting_duration_minutes || 30} min
+                        </div>
+                        <span class="status status-${conv.status}">${formatStatus(conv.status)}</span>
+                    </div>
+                </div>
+                
+                ${timeBoxHtml}
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">Participants</div>
+                    ${participantsHtml}
+                </div>
+                
+                ${conv.proposed_slots && conv.proposed_slots.length > 0 ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">Proposed Times</div>
+                    ${slotsHtml}
+                </div>
+                ` : ''}
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">Activity</div>
+                    <div class="meeting-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Last updated ${timeAgo(conv.last_activity * 1000)}
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalOverlay').classList.add('hidden');
+            selectedConversationId = null;
+        }
+
+        async function deleteConversation() {
+            if (!selectedConversationId) return;
+            
+            if (!confirm('Are you sure you want to delete this conversation?')) return;
+            
+            try {
+                const res = await fetch(`${API}/api/conversations/${selectedConversationId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                if (res.ok) {
+                    closeModal();
+                    loadConversations();
+                } else {
+                    alert('Failed to delete conversation');
+                }
+            } catch (e) {
+                console.error('Delete failed:', e);
+                alert('Failed to delete conversation');
+            }
+        }
+
+        function setupFilters() {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    loadConversations();
+                });
+            });
+        }
+
+        function timeAgo(ts) {
+            const s = Math.floor((Date.now() - ts) / 1000);
+            if (s < 60) return 'now';
+            if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+            if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+            return `${Math.floor(s / 86400)}d ago`;
+        }
+
+        function formatStatus(s) {
+            const m = { new: 'New', parsing: 'Processing', proposed: 'Proposed', awaiting_confirmation: 'Pending', scheduled: 'Scheduled', declined: 'Declined', cancelled: 'Cancelled', error: 'Error' };
+            return m[s] || s;
+        }
+
+        function esc(t) {
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+    </script>
+</body>
+</html>
