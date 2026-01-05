@@ -17,6 +17,23 @@
 
 ---
 
+## Screenshots
+
+<div align="center">
+
+### Landing Page
+<img src="screenshots/landingPage.png" alt="InboxBuddy Landing Page" width="800">
+
+### Dashboard
+<img src="screenshots/dashboard.png" alt="InboxBuddy Dashboard" width="800">
+
+### Confirmation Screen
+<img src="screenshots/confirmation-screen.png" alt="Meeting Confirmation Screen" width="800">
+
+</div>
+
+---
+
 ## Overview
 
 InboxBuddy is a personal AI scheduling assistant built on Cloudflare's Agents SDK. It eliminates the endless back-and-forth of meeting coordination by integrating directly into your existing email workflow.
