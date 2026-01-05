@@ -22,13 +22,13 @@
 <div align="center">
 
 ### Landing Page
-<img src="screenshots/landingPage.png" alt="InboxBuddy Landing Page" width="800">
+<img src="screenshots/landingPage.png" alt="InboxBuddy Landing Page" width="600">
 
 ### Dashboard
-<img src="screenshots/dashboard.png" alt="InboxBuddy Dashboard" width="800">
+<img src="screenshots/dashboard.png" alt="InboxBuddy Dashboard" width="600">
 
 ### Confirmation Screen
-<img src="screenshots/confirmation-screen.png" alt="Meeting Confirmation Screen" width="800">
+<img src="screenshots/confirmation-screen.png" alt="Meeting Confirmation Screen" width="600">
 
 </div>
 
