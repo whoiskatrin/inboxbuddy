@@ -174,12 +174,46 @@ export function renderPrivacyPolicy(): Response {
       <li>We use Cloudflare's secure infrastructure (D1, KV, Durable Objects)</li>
     </ul>
 
-    <h2>Third-Party Services</h2>
-    <p>InboxBuddy integrates with:</p>
+    <h2>Data Sharing & Third-Party Services</h2>
+    <p>InboxBuddy shares, transfers, or discloses your data to the following third-party services:</p>
+    
+    <h3 style="font-size: 16px; margin-top: 24px; color: var(--text-primary);">1. Anthropic (Claude AI)</h3>
     <ul>
-      <li><strong>Google:</strong> For authentication, calendar access, and email (<a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a>)</li>
-      <li><strong>Anthropic Claude:</strong> For AI-powered email understanding (<a href="https://www.anthropic.com/privacy" target="_blank">Anthropic Privacy Policy</a>)</li>
-      <li><strong>Cloudflare:</strong> For hosting and infrastructure (<a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Cloudflare Privacy Policy</a>)</li>
+      <li><strong>What we share:</strong> Limited email content (subject lines and scheduling-related text excerpts only)</li>
+      <li><strong>What we do NOT share:</strong> Google Calendar data, event details, attendee lists, calendar IDs, or Google OAuth tokens are NEVER sent to Anthropic</li>
+      <li><strong>Purpose:</strong> Natural language processing to understand scheduling intent and extract proposed meeting times</li>
+      <li><strong>Data retention by Anthropic:</strong> Anthropic does not retain API inputs beyond the immediate processing of the request</li>
+      <li><strong>AI Training:</strong> We use Anthropic's commercial API which does NOT use customer data for model training. Per <a href="https://www.anthropic.com/legal/commercial-terms" target="_blank">Anthropic's Commercial Terms</a>: "Anthropic will not train models on Customer Content unless Customer explicitly opts in." We have NOT opted in.</li>
+      <li><strong>Privacy Policy:</strong> <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic Privacy Policy</a></li>
+    </ul>
+
+    <div class="highlight">
+      <strong>Google User Data Protection:</strong> Data obtained from Google APIs (including Calendar free/busy information, event data, and user profile information) is NEVER sent to Anthropic or any AI service for processing or training. Calendar availability is checked locally and only the scheduling decision (proposed times) is communicated back to email participants.
+    </div>
+
+    <h3 style="font-size: 16px; margin-top: 24px; color: var(--text-primary);">2. Google</h3>
+    <ul>
+      <li><strong>What we access:</strong> Google Calendar (read availability, create events), basic profile info (name, email)</li>
+      <li><strong>Purpose:</strong> Authentication, checking your availability, and creating calendar events</li>
+      <li><strong>Data flow:</strong> Google data stays within our secure infrastructure and is not shared with other third parties</li>
+      <li><strong>Privacy Policy:</strong> <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+    </ul>
+
+    <h3 style="font-size: 16px; margin-top: 24px; color: var(--text-primary);">3. Cloudflare</h3>
+    <ul>
+      <li><strong>What we share:</strong> All application data is processed on Cloudflare's infrastructure</li>
+      <li><strong>Purpose:</strong> Hosting, data storage (D1 database, KV store), and edge computing</li>
+      <li><strong>Privacy Policy:</strong> <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Cloudflare Privacy Policy</a></li>
+    </ul>
+
+    <h2>Google API Services User Data Policy Compliance</h2>
+    <p>InboxBuddy's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements. Specifically:</p>
+    <ul>
+      <li>We only use Google user data for the purposes described in this policy (scheduling meetings)</li>
+      <li>We do not use Google user data for serving advertisements</li>
+      <li>We do not allow humans to read your data unless required for security purposes, required by law, or with your explicit consent</li>
+      <li>We do not use Google user data for training generalized AI or machine learning models</li>
+      <li>We do not transfer Google user data to third parties for AI training purposes</li>
     </ul>
 
     <h2>Data Retention</h2>
