@@ -90,7 +90,7 @@ IMPORTANT:
 
 	try {
 		const response = await client.messages.create({
-			model: 'claude-sonnet-4-20250514',
+			model: 'claude-haiku-4-20250414',
 			max_tokens: 1024,
 			messages: [
 				{
@@ -178,7 +178,7 @@ Return JSON: {"text": "...", "html": "..."}`;
 
 	try {
 		const response = await client.messages.create({
-			model: 'claude-sonnet-4-20250514',
+			model: 'claude-haiku-4-20250414',
 			max_tokens: 1024,
 			messages: [
 				{
@@ -257,7 +257,7 @@ Return JSON with "text" (plain text) and "html" (simple HTML) versions.`;
 
 	try {
 		const response = await client.messages.create({
-			model: 'claude-sonnet-4-20250514',
+			model: 'claude-haiku-4-20250414',
 			max_tokens: 1024,
 			messages: [
 				{
@@ -371,7 +371,7 @@ INTENT CLASSIFICATION:
 
 	try {
 		const response = await client.messages.create({
-			model: 'claude-sonnet-4-20250514',
+			model: 'claude-haiku-4-20250414',
 			max_tokens: 512,
 			messages: [
 				{
